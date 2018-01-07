@@ -21,12 +21,11 @@ import java.util.Map;
 import java.util.Set;
 
 
-public class MainActivity extends WearableActivity implements CapabilityClient.OnCapabilityChangedListener {
+public class MainActivity extends WearableActivity {
 
     @Override
     protected void onPause() {
         super.onPause();
-        capabilityClient.removeListener(this);
     }
 
     private TextView mTextView;
@@ -37,9 +36,6 @@ public class MainActivity extends WearableActivity implements CapabilityClient.O
     @Override
     protected void onResume() {
         super.onResume();
-
-        capabilityClient.addListener(
-                this, Uri.parse("wear://"), CapabilityClient.FILTER_REACHABLE);
     }
 
     @Override
@@ -53,20 +49,18 @@ public class MainActivity extends WearableActivity implements CapabilityClient.O
     }
 
     public void clickSearchNodes(View view) {
-
         Log.i("CIO", "Searching nodes...");
 
         Task<Map<String, CapabilityInfo>> capabilitiesTask =
                 capabilityClient.getAllCapabilities(CapabilityClient.FILTER_REACHABLE);
+
         capabilitiesTask.addOnSuccessListener(
                 new OnSuccessListener<Map<String, CapabilityInfo>>() {
                     @Override
-                    public void onSuccess(Map<String, CapabilityInfo>
-                                                  capabilityInfoMap) {
+                    public void onSuccess(Map<String, CapabilityInfo> capabilityInfoMap) {
                         nodes.clear();
                         if (capabilityInfoMap.isEmpty()) {
-                            Log.i("CIO", "No capability advertised :/");
-                            return;
+                            Log.i("CIO", "No capability advertised :/"); return;
                         }
 
                         for (String capabilityName : capabilityInfoMap.keySet()) {
@@ -84,16 +78,7 @@ public class MainActivity extends WearableActivity implements CapabilityClient.O
                         found.setText("Nodes: " + printNodes);
                     }
                 });
-
-
     }
-
-
-    @Override
-    public void onCapabilityChanged(@NonNull CapabilityInfo capabilityInfo) {
-        Log.i("CIO", "Capability changed !");
-    }
-
 
     public void clickSendMessage(View view) {
         Log.i("CIO", "Sending a message...");
